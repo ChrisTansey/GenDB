@@ -1,0 +1,42 @@
+{% extends "layout-wide.html" %}
+
+{% block body %}
+    <div class="col-md-12">
+        <div class="row">
+            <p>
+                Failed to upload file "{{ filename }}".
+
+                Go to the <a href="{{ url_for('help') }}">help</a> section to see upload file formats.
+            </p>
+        </div>
+        <div class="row">
+            <h3>Report of errors found in the input file:</h3>
+
+            <table class="table table-striped table-hover table-bordered">
+                <thead>
+                    <th>Line no.</th>
+                    {% for header in headers[:-1] %}
+                        <th>{{ header }}</th>
+                    {% endfor %}
+                    <th colspan="100" >{{ headers[-1] }}</th>
+                </thead>
+                <tbody>
+                    {% for line in errors %}
+                    <tr>
+                        {% for cell in line %}
+                        <td>
+                            {{ cell }}
+                            {% if cell.error %}
+                            <div class="alert alert-danger" style="margin: 5px;">
+                                {{ cell.error }}
+                            </div>
+                            {% endif %}
+                        </td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

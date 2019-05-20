@@ -1,0 +1,1 @@
+from gendb_app import app

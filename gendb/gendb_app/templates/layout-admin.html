@@ -1,0 +1,13 @@
+{% extends "layout-sidebar.html" %}
+
+{% block sidebar %}
+<li {% if request.path == url_for('sys_logs') %} class="active" {% endif %}>
+    <a href="{{ url_for('sys_logs') }}"><i class="fa fa-tachometer"></i> System Logs</a>
+</li>
+<li {% if request.path == url_for('admin_proj_logs') %} class="active" {% endif %}>
+    <a href="{{ url_for('admin_proj_logs') }}"><i class="fa fa-briefcase"></i> Project Logs</a>
+</li>
+<li {% if request.path == url_for('users') %} class="active" {% endif %}>
+    <a href="{{ url_for('users') }}"><i class="fa fa-users"></i> Users</a>
+</li>
+{% endblock %}

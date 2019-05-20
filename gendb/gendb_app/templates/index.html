@@ -1,0 +1,99 @@
+{% extends "layout-wide.html" %}
+
+{% block body %}
+<div class="col-md-12">
+    <div class="row">
+        <div class="col-md-6">
+            <h1 style="text-align: center">GenDB</h1>
+            <p class="lead text-center">Genomic data management system</p>
+            <p>To get started
+                <a href="{{ url_for('add_project') }}">create a project</a>
+                 or visit the
+                <a href="{{ url_for('help') }}">help</a>
+                section for more information. There you can find templates for input and output files, guides on using the system and general reference information.
+            </p>
+        </div>
+        <div class="col-md-6">
+            <div class="panel panel-success">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Database Stats</h3>
+                </div>
+                <div class="panel-body">
+                    There are currently
+                    <span class="label label-warning">{{ project_count }} projects</span>
+                    containing
+                    <span class="label label-warning">{{ ind_count }} individuals</span>
+                    with
+                    <span class="label label-warning">{{ gen_count }} distinct genotype</span>
+                    entries and
+                    <span class="label label-warning">{{ phen_count }} distinct phenotype</span>
+                    entries.
+                </div>
+            </div>
+            <!-- TODO: Possibly remove the div below -->
+            <!--<div class="panel panel-success list-group">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Your Latest Projects</h3>
+                </div>
+                {% for p in latest %}
+                <a href="{{ url_for('project', id=p.project_id) }}" class="list-group-item">
+                    <h4 class="list-group-item-heading">{{ p.name }}</h4>
+                    <p class="list-group-item-text">{{ p.description }}</p>
+                </a>
+                {% endfor %}
+            </div>-->
+        </div>
+    </div>
+    <div class="row">
+        <a href="{{ url_for('add_project') }}" class="btn btn-success"><i class="fa fa-plus"></i> New Project</a>
+
+        <h3>Projects</h3>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for project in projects %}
+                <tr>
+                    <td class="col-md-1">
+                        <a href="{{ url_for('project', id=project.id) }}" class="btn btn-success">
+                            <i class="fa fa-eye"></i> View
+                        </a>
+                    </td>
+                    <td>{{ project.id }}</td>
+                    <td>{{ project.title }}</td>
+                    <td>{{ project.desc }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+<!-- TODO: Decide if this is to be removed
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>Individual</th>
+            <th>Father</th>
+            <th>Mother</th>
+            <th>Gender</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in rows %}
+        <tr>
+            <td>{{ row.individual_id }}</td>
+            <td>{{ row.father_id }}</td>
+            <td>{{ row.mother_id }}</td>
+            <td>{{ row.gender }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>-->
+
+{% endblock %}
