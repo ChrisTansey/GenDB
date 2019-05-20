@@ -21,7 +21,7 @@ The system comprises of a MySQL database part and a Python Flask server part - t
 
 ## Preparation of the Python Flask part
 
-1) On the machine that will be used to host the server: move the `gendb_deploy` directory to the desired location and navigate into it from within the terminal. If not already done, install python3 and python3-venv
+1) On the machine that will be used to host the server: move the `gendb` directory to the desired location and navigate into it from within the terminal. If not already done, install python3 and python3-venv
 
 2) Create a Python virtual environment - necessary for step 4 without making system-wide changes
 
@@ -59,7 +59,7 @@ The system comprises of a MySQL database part and a Python Flask server part - t
 
 If the steps above have already been followed, restarting the Flask server is as follows:
 
-1) Navigate into the `gendb_deploy` directory and activate the virtual environment
+1) Navigate into the `gendb` directory and activate the virtual environment
 
         bash> source venv_dir/bin/activate
 

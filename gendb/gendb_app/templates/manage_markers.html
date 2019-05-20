@@ -1,0 +1,55 @@
+{% extends "layout-wide.html" %}
+
+{% block body %}
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-6">
+                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#upload_modal">
+                    <i class="fa fa-upload"></i> Upload Markers
+                </button>
+            </div>
+
+            <div class="modal fade" id="upload_modal" tabindex="-1" role="dialog" aria-labelledby="upload_label" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="upload_label">Upload Markers File</h4>
+                        </div>
+                        <div class="modal-body">
+                            <form role="form" action="{{ url_for('upload_markers') }}" method=post enctype=multipart/form-data>
+                                <div class="form-group">
+                                    <label for="file">Markers file</label>
+                                    <p>A file where each row has the 4 required columns: marker, chromosome number, position, number of possible alleles (n); followed by the n possible alleles that may occur at that marker</p>
+                                    <input type="file" name="markers">
+                                </div>
+                                <button type="submit" class="btn btn-success"><i class="fa fa-upload"></i> Upload</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <th>Marker</th>
+                        <th>Chromosome</th>
+                        <th>Position</th>
+                        <th>Possible Alleles</th>
+                    </thead>
+                    <tbody>
+                        {% for marker in markers %}
+                        <tr>
+                            {% for cell in marker %}
+                            <td>{{ cell }} </td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

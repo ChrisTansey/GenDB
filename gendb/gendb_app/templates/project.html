@@ -1,0 +1,341 @@
+{% extends "layout-wide.html" %}
+
+{% block body %}
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-6">
+                {% if current_user.is_project_admin %}
+                <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#delete">
+                    <i class="fa fa-trash-o"></i> Delete
+                </button>
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addmem">
+                    <i class="fa fa-user"></i> Add Member
+                </button>
+                {% endif %}
+
+                <h3>Description</h3>
+                <p>{{ project.desc }}</p>
+
+                <h3>Contributors</h3>
+                <table class="table table-striped table-hover table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Project Role</th>
+                            {% if current_user.is_project_admin %}
+                            <th>Options</th>
+                            {% endif %}
+                        </tr>
+
+                        {% for member in members %}
+                        <tr>
+                            <td>{{ member.full_name }}</td>
+                            <td>{{ member.email }}</td>
+                            <td>
+                                {% if member.is_project_admin %}
+                                Administrator
+                                {% else %}
+                                Contributor
+                                {% endif %}
+                            </td>
+                            {% if current_user.is_project_admin %}
+                            <td>
+                                <a href="{{ url_for('remove_member', user_email=member.email, proj_id=project.id) }}"><span class="label label-danger"><i class="fa fa-trash-o"></i> Remove</span></a>
+                            </td>
+                            {% endif %}
+                        </tr>
+                        {% endfor %}
+
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="col-md-6">
+
+                <div class="panel panel-default">
+                    <div class="panel-heading">Stats</div>
+                    <div class="panel-body">
+                        <span class="label label-warning">{{ proj_ind_count }} individuals</span>
+                        <span class="label label-warning">{{ genos_proj }} genotypes</span>
+                        <span class="label label-warning">{{ proj_pheno_count }} phenotypes</span>
+                    </div>
+                </div>
+
+                <div class="panel panel-default">
+                    <div class="panel-heading">Upload</div>
+                    <div class="panel-body">
+                        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#indiv_modal">
+                            <i class="fa fa-upload"></i> Individuals
+                        </button>
+                        <button type="button" class="btn btn-success {% if proj_ind_count == 0 %}disabled{% endif %} " data-toggle="modal" data-target="#group_modal">
+                            <i class="fa fa-upload"></i> Group
+                        </button>
+                        <button type="button" class="btn btn-success {% if proj_ind_count == 0 %}disabled{% endif %} " data-toggle="modal" data-target="#geno_modal">
+                            <i class="fa fa-upload"></i> Genotype
+                        </button>
+                        <button type="button" class="btn btn-success {% if proj_ind_count == 0 %}disabled{% endif %} " data-toggle="modal" data-target="#pheno_modal">
+                            <i class="fa fa-upload"></i> Phenotype
+                        </button>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="indiv_modal" tabindex="-1" role="dialog" aria-labelledby="indiv_label" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="indiv_label">Upload Individuals File</h4>
+                            </div>
+                            <div class="modal-body">
+                                <form role="form" action="{{ url_for('upload_individuals', proj_id=project.id) }}" method=post enctype=multipart/form-data>
+                                    <div class="form-group">
+                                        <label for="pedFile">Individuals file</label>
+                                        <p>A file with 2 columns: ID, Gender</p>
+                                        <input type="file" name="individuals">
+                                    </div>
+                                    <button type="submit" class="btn btn-success"><i class="fa fa-upload"></i> Upload</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="group_modal" tabindex="-1" role="dialog" aria-labelledby="group_label" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="group_label">Upload Group File</h4>
+                            </div>
+                            <div class="modal-body">
+                                <form role="form" action="{{ url_for('upload_group', proj_id=project.id) }}" method=post enctype=multipart/form-data>
+                                    <div class="form-group">
+                                        <label for="groupName">Group Name</label>
+                                        <input type="text" class="form-control" name="name">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="groupFile">Group file</label>
+                                        <p>A file with a single column containing the IDs of the individuals in the group</p>
+                                        <input type="file" name="group">
+                                    </div>
+                                    <button type="submit" class="btn btn-success"><i class="fa fa-upload"></i> Upload</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="geno_modal" tabindex="-1" role="dialog" aria-labelledby="geno_label" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="geno_label">Upload Genotype File</h4>
+                            </div>
+                            <div class="modal-body">
+                                <form role="form" action="{{ url_for('upload_genotypes', proj_id=project.id) }}" method=post enctype=multipart/form-data class="well">
+                                    <div class="form-group">
+                                        <label for="mapFile">Single genotype file</label>
+                                        <p>A .csv file with 3 columns: ID, SNP, Call</p>
+                                        <input type="file" name="genotypes">
+                                    </div>
+                                    <button type="submit" class="btn btn-success"><i class="fa fa-upload"></i> Upload</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="delete" tabindex="-1" role="dialog" aria-labelledby="indiv_label" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="indiv_label">Are you sure you want to delete this project?</h4>
+                                <p>This cannot be undone</p>
+                            </div>
+                            <div class="modal-body">
+                                <button class="btn btn-primary" data-dismiss="modal"> Cancel</button>
+                                <a href="{{ url_for('delete_project', id=project.id) }}" class="btn btn-danger"><i class="fa fa-trash-o"></i> Yes</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="addmem" tabindex="-1" role="dialog" aria-labelledby="indiv_label" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="indiv_label"></h4>
+                                <p>Write the email address of the member you want to add and click Add.</p>
+                            </div>
+                            <div class="modal-body">
+                                <form role="form" action="{{ url_for('add_member', proj_id=project.id) }}" method=post>
+                                    <div class="form-group">
+                                        <label for="email">Email</label>
+                                        <input type="text" class="form-control" name="email">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="is_project_admin">Project Administrator</label>
+                                        <input type="checkbox" name="is_project_admin">
+                                    </div>
+                                    <button type="submit" class="btn btn-success"><i class="fa fa-plus"></i> Add</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="pheno_modal" tabindex="-1" role="dialog" aria-labelledby="indiv_label" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="indiv_label">Upload Phenotype    File</h4>
+                            </div>
+                            <div class="modal-body">
+                                <form role="form" action="{{ url_for('upload_phenotypes', proj_id=project.id) }}" method=post enctype=multipart/form-data class="well">
+                                    <div class="form-group">
+                                        <label for="phenotypes">Phenotypes file</label>
+                                        <p>A csv file with N+1 columns where N is the number of phenotypes and the first line is a header: ID, Pheno1, Pheno2, ... </p>
+                                        <input type="file" name="phenotypes">
+                                    </div>
+                                    <button type="submit" class="btn btn-success"><i class="fa fa-upload"></i> Upload</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="map_modal" tabindex="-1" role="dialog" aria-labelledby="indiv_label" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="indiv_label">Upload Map File</h4>
+                            </div>
+                            <div class="modal-body">
+
+                                <form role="form" action="{{ url_for('bulk_geno') }}" method=post enctype=multipart/form-data class="well">
+                                    <div class="form-group">
+                                        <label for="mapFile">MAP file</label>
+                                        <input type="file" name="map_file">
+                                        <input type="hidden" name="id" value="{{ project.id }}">
+                                        <input type="hidden" name="proname" value="{{ project.title }}">
+                                    </div>
+                                    <button type="submit" class="btn btn-success disabled"><i class="fa fa-upload"></i> Upload</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="ped_dl" tabindex="-1" role="dialog" aria-labelledby="indiv_label" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="indiv_label">Download PED</h4>
+                            </div>
+                            <div class="modal-body">
+                                <form role="form" class="form-horizontal" action="{{ url_for('download_ped', proj_id=project.id) }}" method=post enctype=multipart/form-data class="">
+                                    <div class="form-group">
+                                        <label for="select" class="col-lg-2 control-label">Group</label>
+                                        <div class="col-lg-10">
+                                            <select class="form-control" id="group" name="group">
+                                                <option value="ALL">ALL</option>
+                                                {% for grp in groups %}
+                                                <option value="{{ grp.group_id }}">{{ grp.name }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="select" class="col-lg-2 control-label">Phenotype</label>
+                                        <div class="col-lg-10">
+                                            <select class="form-control" id="phen" name="phen" size=4 multiple>
+                                                <option value="ALL">ALL</option>
+                                                <option value="NONE">NONE</option>
+                                                {% for phen in phen_list %}
+                                                <option value="{{ phen }}">{{ phen }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="select" class="col-lg-2 control-label">Genotype</label>
+                                        <div class="col-lg-10">
+                                            <select class="form-control" id="gen" name="gen" size=4 multiple>
+                                                <option value="ALL">ALL</option>
+                                                <option value="NONE">NONE</option>
+                                                {% for gen in gen_list %}
+                                                <option value="{{ gen }}">{{ gen }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                    
+                                    <!--<div class="form-group">
+                                        <label for="select" class="col-lg-2 control-label">Gender</label>
+                                        <div class="col-lg-10">
+                                            <select class="form-control" id="gender" name="gender">
+                                                <option value="0">Unknown</option>
+                                                <option value="1">Male</option>
+                                                <option value"2">Female</option>
+                                            </select>
+                                        </div>
+                                    </div>-->
+
+                                    <div class="form-group">
+                                        <div class="col-lg-10 col-lg-offset-2">
+                                            <button type="submit" class="btn btn-success"><i class="fa fa-download"></i> Download</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel panel-default">
+                    <div class="panel-heading">Download</div>
+                    <div class="panel-body">
+                        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#ped_dl">
+                            <i class="fa fa-download"></i> PED file
+                        </button>
+                        <a class="btn btn-success" href="{{ url_for('download_dat', project_id=project.id, filename='file.dat') }}"><i class="fa fa-download"></i> DAT file</a>
+
+                        <!--<a class="btn btn-success disabled" href=""><i class="fa fa-download"></i> DAT file</a>-->
+                    </div>
+                </div>
+            </div>
+            <!--<div class="col-md-12">
+                <h1>QC Test</h1>
+                <hr>
+                <div class="row">
+                    <div class="col-md-6">
+                        {% if hardy %}
+                        <form action="{{ url_for('project_page', id=project.id) }}" method="POST" name="hardy_form">
+                            {{ hardy.hidden_tag() }}
+                            <div class="form-group">
+                                {{ hardy.btn(class_="btn btn-default", id="btn_hardy", value="Run Tests") }}
+                            </div>
+                        </form>
+                        {% endif %}
+                    </div>
+                </div>
+                {% if hardy_data %}
+                <samp>
+                    {% for line in hardy_data %}
+                    {{ line }}<br>
+                    {% endfor %}
+                </samp>
+                {% endif %}
+            </div>-->
+        </div>
+    </div>
+{% endblock %}

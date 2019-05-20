@@ -1,0 +1,25 @@
+{% extends "layout-base.html" %}
+
+{% block base_body %}
+<div class="container container-signin">
+    <form class="form-setup well" role="form" action="" method="post" name="login">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages  %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }}" style="margin-top: 20px;">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+        {{ form.hidden_tag() }}
+
+        <h2 class="form-signin-heading">Setup System Administrator Account</h2>
+        {{ form.email(type="text", class="form-control", placeholder="Email") }}
+        {{ form.full_name(type="text", class="form-control", placeholder="Full Name") }}
+        {{ form.password(type="password", class="form-control", placeholder="Password") }}
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Register</button>
+    </form>
+</div>
+{% endblock %}
